@@ -345,7 +345,6 @@ function openSheet(i,from){
   const links=[];
   if(t.u) links.push(`<a class="btn" href="${t.u}" target="_blank" rel="noopener">${t.t==="Teacher Tool"?"Open tool":"Open student link"} <span aria-hidden="true">↗</span></a>`);
   if(t.alt) links.push(`<a class="btn ghost" href="${t.alt.url}" target="_blank" rel="noopener">${esc(t.alt.label)} ↗</a>`);
-  if(t.r) links.push(`<a class="btn ghost" href="${t.r}" target="_blank" rel="noopener">View source on GitHub ↗</a>`);
   const s=$("scrim");
   s.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh" style="${colorVars(t.s)}">
     <div class="head"><div class="ico">${icon(t.t,30)}</div>
