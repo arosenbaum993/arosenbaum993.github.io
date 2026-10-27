@@ -1,0 +1,350 @@
+<title>Rosenbaum Teaching Tools</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: dark district-colored masthead, sticky filter bar, then a wrapping grid of subject-colored tool cards; click opens a detail sheet */
+:root{
+  --bg:#F5F6FA; --surface:#FFFFFF; --ink:#151722; --muted:#5B6072; --line:#E1E4EE;
+  --mast:#121214; --mast-ink:#FFFFFF; --mast-muted:#C9C9D1; --red:#C8102E; --gold:#F2B705;
+  --ela:#E2512B; --math:#2563EB; --sci:#0F9D6B; --ss:#C98600; --life:#D6336C; --all:#7C4DDB;
+  --ela-soft:#FDEBE5; --math-soft:#E5EDFD; --sci-soft:#E1F5EC; --ss-soft:#FBF1D9; --life-soft:#FCE6EE; --all-soft:#EFE8FC;
+  --chip:#ECEEF5; --shadow:0 1px 2px rgba(20,22,40,.06),0 6px 18px rgba(20,22,40,.06);
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111218; --surface:#1A1C25; --ink:#EEF0F6; --muted:#A3A8BA; --line:#2C2F3C;
+  --mast:#0A0A0C; --mast-ink:#FFFFFF; --mast-muted:#B8B8C2;
+  --ela:#FF7A55; --math:#6E9BFF; --sci:#3CCB94; --ss:#F2B705; --life:#FF6B9A; --all:#A98BFF;
+  --ela-soft:#3A2019; --math-soft:#1A2440; --sci-soft:#12302A; --ss-soft:#332810; --life-soft:#3A1826; --all-soft:#2A2042;
+  --chip:#252836; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111218; --surface:#1A1C25; --ink:#EEF0F6; --muted:#A3A8BA; --line:#2C2F3C;
+  --mast:#0A0A0C; --mast-ink:#FFFFFF; --mast-muted:#B8B8C2;
+  --ela:#FF7A55; --math:#6E9BFF; --sci:#3CCB94; --ss:#F2B705; --life:#FF6B9A; --all:#A98BFF;
+  --ela-soft:#3A2019; --math-soft:#1A2440; --sci-soft:#12302A; --ss-soft:#332810; --life-soft:#3A1826; --all-soft:#2A2042;
+  --chip:#252836; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Masthead */
+.mast{background:var(--mast);color:var(--mast-ink);position:relative;overflow:hidden}
+.mast::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--red) 0 33%,var(--gold) 33% 66%,var(--red) 66%)}
+.mast .wrap{padding-block:44px 52px;display:grid;gap:18px;position:relative;z-index:1}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.2rem,6vw,4rem);line-height:.98;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 .by{display:block;font-size:.42em;font-weight:500;letter-spacing:0;color:var(--mast-muted);margin-top:.5em}
+h1 .by b{color:var(--mast-ink);font-weight:700}
+.lede{max-width:60ch;color:var(--mast-muted);margin:0;font-size:1.05rem}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.meta span{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-size:.85rem;color:var(--mast-ink)}
+.meta span i{font-style:normal;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.confetti{position:absolute;right:-40px;top:-30px;width:360px;height:360px;opacity:.9;pointer-events:none}
+@media (max-width:700px){.confetti{opacity:.35;right:-120px}}
+
+/* Filter bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 4px 14px rgba(20,22,40,.04)}
+.bar .wrap{padding-block:14px;display:grid;gap:12px}
+.row1{display:flex;gap:10px;flex-wrap:wrap}
+.search{flex:1 1 260px;min-width:0;position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;font:inherit;padding:11px 14px 11px 38px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+select{font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);flex:0 0 auto}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chips .lbl{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;min-width:62px}
+.chip{font:inherit;font-size:.88rem;border:1.5px solid transparent;background:var(--chip);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:transform .12s}
+.chip:hover{transform:translateY(-1px)}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed="true"]{background:var(--c,var(--ink));color:#fff;border-color:var(--c,var(--ink))}
+.chip[aria-pressed="true"] .dot{background:#fff}
+.chip.plain[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Grid */
+main .wrap{padding-block:26px 56px}
+.status{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.status h2{font-family:var(--display);font-size:1.35rem;margin:0}
+.status p{margin:0;color:var(--muted);font-size:.92rem}
+.clear{font:inherit;background:none;border:none;color:var(--math);cursor:pointer;text-decoration:underline;padding:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;min-width:0}
+.card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(20,22,40,.08),0 14px 30px rgba(20,22,40,.12)}
+.card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.card .top{background:var(--soft);padding:16px 16px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative}
+.card .top::before{content:"";position:absolute;left:0;top:0;right:0;height:5px;background:var(--c)}
+.ico{width:46px;height:46px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;flex:0 0 auto;transform:rotate(-4deg)}
+.card:hover .ico{transform:rotate(3deg) scale(1.05);transition:transform .2s}
+.grade{font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1;color:var(--c);text-align:right}
+.grade small{display:block;font-family:var(--body);font-weight:700;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.72rem;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:6px;background:var(--chip);color:var(--muted)}
+.tag.subj{background:var(--soft);color:var(--c)}
+.card h3{font-family:var(--display);font-size:1.12rem;line-height:1.2;margin:0;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:.92rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.credit{margin-top:auto;padding-top:10px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.credit b{color:var(--ink)}
+.lock{font-size:.72rem;font-weight:700;color:var(--red)}
+.empty{text-align:center;padding:60px 16px;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--ink);margin-bottom:6px}
+
+/* Detail sheet */
+.scrim{position:fixed;inset:0;background:rgba(10,10,16,.55);z-index:20;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--surface);border-radius:20px;max-width:620px;width:100%;max-height:100%;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .22s ease-out}
+@keyframes pop{from{transform:translateY(12px) scale(.98);opacity:.6}to{transform:none;opacity:1}}
+.sheet .head{background:var(--soft);padding:22px 22px 18px;display:flex;gap:16px;align-items:flex-start;position:relative}
+.sheet .head::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--c)}
+.sheet .ico{width:58px;height:58px;border-radius:14px}
+.sheet h2{font-family:var(--display);font-size:1.55rem;line-height:1.15;margin:4px 0 6px;text-wrap:balance}
+.close{all:unset;cursor:pointer;margin-left:auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--ink);flex:0 0 auto}
+.close:focus-visible{outline:3px solid var(--gold)}
+.sheet .content{padding:20px 22px 24px;display:grid;gap:16px}
+.sheet .desc{margin:0;font-size:1.02rem;max-width:62ch}
+dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0;font-size:.92rem}
+dt{color:var(--muted);font-weight:700}
+dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.feats{display:flex;gap:6px;flex-wrap:wrap}
+.feat{font-size:.8rem;padding:4px 10px;border-radius:999px;border:1.5px solid var(--c);color:var(--c);font-weight:700}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;padding:11px 16px;border-radius:10px;background:var(--c);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.note{font-size:.85rem;color:var(--muted);background:var(--chip);border-radius:10px;padding:10px 12px;margin:0}
+.signed{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:14px;font-size:.9rem}
+.mono{width:36px;height:36px;border-radius:50%;background:var(--mast);color:var(--gold);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:.9rem;border:2px solid var(--red);flex:0 0 auto}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="mast">
+  <svg class="confetti" viewBox="0 0 360 360" aria-hidden="true">
+    <circle cx="250" cy="110" r="70" fill="#C8102E" opacity=".9"/>
+    <rect x="150" y="40" width="70" height="70" rx="14" fill="#F2B705" transform="rotate(14 185 75)"/>
+    <circle cx="300" cy="230" r="34" fill="#2563EB"/>
+    <rect x="180" y="190" width="56" height="56" rx="10" fill="#0F9D6B" transform="rotate(-18 208 218)"/>
+    <path d="M110 150 l26 46 h-52z" fill="#E2512B"/>
+    <circle cx="130" cy="260" r="12" fill="#F2B705"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">McIntosh County Schools · Grades 2–12</div>
+    <h1>Teaching Tools Library<span class="by">Custom-built for MCSS classrooms by <b>Alicia Rosenbaum</b></span></h1>
+    <p class="lede">Georgia Milestones simulations, pre/post tests, review games, and teacher tools. Search by grade, content area, or type, then tap any card for details and links.</p>
+    <div class="meta" id="meta"></div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="row1">
+      <label class="search" for="q">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search tools, standards, courses…" aria-label="Search tools">
+      </label>
+      <select id="grade" aria-label="Grade level"></select>
+    </div>
+    <div class="chips" id="subjChips"><span class="lbl">Content</span></div>
+    <div class="chips" id="typeChips"><span class="lbl">Type</span></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="status"><h2 id="count"></h2><p id="clearWrap"></p></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<footer><div class="wrap"><span>All tools designed and built by Alicia Rosenbaum, Instructional Coach, McIntosh County Schools.</span><span>Aligned to the Georgia Standards of Excellence</span></div></footer>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<script>
+const GH = "https://github.com/arosenbaum993/";
+const PG = "https://arosenbaum993.github.io/";
+const ALL=[2,3,4,5,6,7,8,9,10,11,12];
+// g: grades covered; s: subject; t: type; f: feature tags
+const TOOLS = [
+ {n:"Prefix Power", g:[3], s:"ELA", t:"Game", d:"Gamified prefix and morphology practice. Students build and break apart words while earning points.", u:PG+"3rdgradeprefixgame/", r:GH+"3rdgradeprefixgame", f:["Morphology"]},
+ {n:"Grade 3 Math: Numbers & Operations", g:[3], s:"Math", t:"Unit Assessment", d:"Section 1 test on numbers and operations. Includes a second parallel form and a teacher dashboard.", u:PG+"3rdgrade-math/", r:GH+"3rdgrade-math", f:["Two forms","Teacher dashboard"]},
+ {n:"Grade 4 Results", g:[4], s:"All Subjects", t:"Teacher Tool", d:"Teacher-facing web app for collecting and viewing 4th grade assessment results.", staff:true, f:["Score reporting"]},
+ {n:"Grade 5 Math EOG Simulation", g:[5], s:"Math", t:"Milestones Simulation", d:"Two-part Georgia Milestones EOG simulation with a mid-test break, domain breakdown, answer review, and vocabulary flags.", u:PG+"5thgrade2partsim/", r:GH+"5thgrade2partsim", f:["Two sections","Domain breakdown","Answer review"]},
+ {n:"Grade 5 Math Practice", g:[5], s:"Math", t:"Milestones Simulation", d:"Single-session Georgia Milestones EOG practice for 5th grade math.", u:PG+"math-5th-grade-eog/", r:GH+"math-5th-grade-eog"},
+ {n:"Grade 5 Science", g:[5], s:"Science", t:"Milestones Simulation", d:"Georgia Milestones EOG practice simulation covering Earth, Physical, and Life Science.", u:PG+"5th_Science_Sim/", r:GH+"5th_Science_Sim", alt:{label:"Version that logs scores", url:"https://script.google.com/macros/s/AKfycbx7qms4Zsyv60JioQEDlXtuAzgR5h4dhYgslaoIWoDJJPJDRwhRcfJlwMYISV9ZGDZxgw/exec"}, f:["Score logging"]},
+ {n:"Squid vs. Shark", g:[6], s:"ELA", t:"Milestones Simulation", d:"Paired-text simulation with selected-response and technology-enhanced items, plus a peer revision writing task.", u:PG+"Gr6-ELA-Squid-vs-Shark-Simulation-/", r:GH+"Gr6-ELA-Squid-vs-Shark-Simulation-", f:["Paired texts","TE items"]},
+ {n:"Paired Texts: Science & Technology", g:[6], s:"ELA", t:"Milestones Simulation", d:"Grade 6 ELA paired-passage Georgia Milestones practice.", u:PG+"v26thgradesim/", r:GH+"v26thgradesim", f:["Paired texts"]},
+ {n:"Peer Revision Practice", g:[6], s:"ELA", t:"Review & Practice", d:"Standalone version of the Grade 6 peer revision task. Students revise a peer draft the way the Milestones writing items ask.", u:PG+"grade-6-peer-revision-sim/", alt:{label:"Version that logs scores", url:"https://script.google.com/macros/s/AKfycbxKLNa7kQHHxBEZ776AQj1QpYNnix6GaURPTVaMytyQEsYFvHlVrYhRklFwdb3TVIRtoA/exec"}, f:["Revision"]},
+ {n:"Grade 6 Math Mock Assessment", g:[6], s:"Math", t:"Milestones Simulation", d:"Mock Milestones assessment with review-before-submit and a results screen.", u:PG+"corrected-6th-math-mock-sim/", r:GH+"corrected-6th-math-mock-sim", f:["Review before submit"]},
+ {n:"Writing & Language Review", g:[7], s:"ELA", t:"Review & Practice", d:"Grade 7 ELA conventions review: grammar, usage, and language skills tested on Milestones.", u:PG+"7th-Grade-Language-and-writing/", r:GH+"7th-Grade-Language-and-writing", f:["Conventions"]},
+ {n:"Grade 7 ELA Pre/Post Test", g:[7], s:"ELA", t:"Benchmark & Diagnostic", d:"Grade 7 ELA mock assessment given as a pre-test and post-test to measure growth.", u:PG+"2026277thELAprepost/Grade-7-ELA-Pre-Post.html", f:["Growth"]},
+ {n:"Grade 8 ELA Practice Test", g:[8], s:"ELA", t:"Milestones Simulation", d:"Georgia Milestones ELA practice with a results screen.", u:PG+"8thgradeelasim/", r:GH+"8thgradeelasim"},
+ {n:"Grade 8 Mathematics EOG", g:[8], s:"Math", t:"Milestones Simulation", d:"Georgia Milestones EOG practice simulation for 8th grade math.", u:PG+"gr8math-eog-sim/", r:GH+"gr8math-eog-sim"},
+ {n:"Grade 8 Science EOG", g:[8], s:"Science", t:"Milestones Simulation", d:"EOG simulation with domain performance, answer review, and vocabulary flags.", u:PG+"8th-grade-science-sim/", r:GH+"8th-grade-science-sim", f:["Domain breakdown","Answer review"]},
+ {n:"Matter & Particle Models", g:[8], s:"Science", t:"Review & Practice", d:"Focused unit simulation on matter and particle models for Grade 8 Physical Science.", u:PG+"v3-8th_Science_SIM/", r:GH+"v3-8th_Science_SIM"},
+ {n:"Physical Science Milestone Review", g:[8], s:"Science", t:"Review & Practice", d:"Review quiz covering Energy, Heat Transfer, Forces & Motion, and Electricity & Magnetism. Logs scores to a spreadsheet.", u:"https://script.google.com/macros/s/AKfycbyIA9rOylmeoCQHg1HBAd-6ka_QykVTNVkTrMUZiY3g69zDyUDnyJ6L7Sd0CVEIHYm4/exec", f:["Score logging"]},
+ {n:"Grade 8 Georgia Studies EOG", g:[8], s:"Social Studies", t:"Milestones Simulation", d:"Georgia Studies EOG simulation with question review.", u:PG+"v2ga_studies_eog_simulation_final.html/", r:GH+"v2ga_studies_eog_simulation_final.html", alt:{label:"Score-logging version (MCSS sign-in)", url:"https://script.google.com/a/macros/mcintosh.k12.ga.us/s/AKfycbx4erXKD8S5078IfWuH6OBRHqEtFimFAu0jUZ4uG8u4Zs1pC5Uo7qcBebX_IvLkTArfJw/exec"}, f:["Question review"]},
+ {n:"Grade 8 Georgia Social Studies", g:[8], s:"Social Studies", t:"Milestones Simulation", d:"Full-length Milestones simulation for Georgia Studies. The largest build in the collection.", u:PG+"gahistorysim/", r:GH+"gahistorysim", f:["Full length"]},
+ {n:"Grade 8 Simulation Results", g:[8], s:"All Subjects", t:"Teacher Tool", d:"Teacher-facing web app for collecting and displaying 8th grade simulation results.", staff:true, f:["Score reporting"]},
+ {n:"Lit & Comp II AI-Graded Writing Sim", g:[10], s:"ELA", t:"Benchmark & Diagnostic", d:"34-point EOC simulation (26 SR/TE + 8 writing) on a heat-safety source packet. Writing is scored against the Milestones 8-point, 3-trait rubric. Includes an intervention report and a parallel support form at a 7th grade reading level.", u:PG+"elaprepost202627/", r:GH+"elaprepost202627", f:["AI-graded writing","Intervention report","Support form"]},
+ {n:"Lit & Comp II Practice Simulation", g:[10], s:"ELA", t:"Milestones Simulation", d:"EOC practice simulation with a writer's checklist and a writing rubric summary.", u:PG+"10th_Grade_ELA_Sim/", r:GH+"10th_Grade_ELA_Sim", f:["Writer's checklist"]},
+ {n:"Lit & Comp II Base Simulation", g:[10], s:"ELA", t:"Milestones Simulation", d:"Base Georgia Milestones Lit & Comp II practice simulation.", u:PG+"litcomp2-simulation/", r:GH+"litcomp2-simulation"},
+ {n:"Lit & Comp II with Video", g:[10], s:"ELA", t:"Milestones Simulation", d:"The Lit & Comp II simulation with an embedded video stimulus.", u:PG+"LitComp2w-video/", r:GH+"LitComp2w-video", f:["Video stimulus"]},
+ {n:"Algebra C&C Prerequisite Diagnostic", g:[9], s:"Math", t:"Benchmark & Diagnostic", d:"Day 1 diagnostic of the prerequisite skills students need for Algebra: Concepts & Connections.", u:PG+"geometryday1diagnostic/", r:GH+"geometryday1diagnostic", f:["Day 1"]},
+ {n:"Algebra: Concepts & Connections EOC", g:[9], s:"Math", t:"Milestones Simulation", d:"EOC practice simulation with a results screen.", u:PG+"algebra-eoc-sim/", r:GH+"algebra-eoc-sim"},
+ {n:"Algebra C&C EOC Review", g:[9], s:"Math", t:"Review & Practice", d:"Review-mode simulation for the Algebra C&C EOC.", u:PG+"algebrareviewsim/", r:GH+"algebrareviewsim"},
+ {n:"Algebra C&C Milestones Sim", g:[9], s:"Math", t:"Milestones Simulation", d:"Simulation with a built-in formula sheet, domain breakdown, and a separate teacher dashboard page.", u:PG+"algebra-gm-sim/", r:GH+"algebra-gm-sim", f:["Formula sheet","Teacher dashboard"]},
+ {n:"Algebra C&C Practice Simulation", g:[9], s:"Math", t:"Milestones Simulation", d:"Single-question navigation with domain performance results.", u:PG+"chateocalgsim/", r:GH+"chateocalgsim", f:["Domain breakdown"]},
+ {n:"Biology Pre/Post Diagnostic", g:[9,10], s:"Science", t:"Benchmark & Diagnostic", d:"40 items weighted to the Biology EOC blueprint (Cells, Genetics, Classification, Ecology, Evolution). Per-standard mastery heatmap, pre-post growth, reteach groups, and CSV export.", u:PG+"biologypretest2627/", r:GH+"biologypretest2627", f:["Mastery heatmap","Reteach groups","CSV export"]},
+ {n:"Biology EOC Practice Simulation", g:[9,10], s:"Science", t:"Milestones Simulation", d:"Biology EOC practice in Georgia Milestones format.", u:PG+"biologyeoc-sim/", r:GH+"biologyeoc-sim"},
+ {n:"Environmental Science Semester Benchmark", g:[10,11,12], s:"Science", t:"Benchmark & Diagnostic", d:"Covers SEV1–SEV5 with parallel Forms A and B. Works offline, auto-saves, flags for review, projects an achievement level, and includes a teacher dashboard.", u:PG+"prebenchmarkenvsci/", r:GH+"prebenchmarkenvsci", f:["Forms A/B","Works offline","Teacher dashboard"]},
+ {n:"U.S. History EOC Pre/Post Test", g:[11], s:"Social Studies", t:"Benchmark & Diagnostic", d:"Built to the July 2025 blueprint (SSUSH1–23). Two parallel forms matched on standard, DOK, and item type, with partial-credit multi-select items, an answer key, and a growth-summary logger.", u:PG+"ushpreposttest/", r:GH+"ushpreposttest", f:["Two forms","DOK-matched","Growth summary"]},
+ {n:"U.S. History EOC Practice v3", g:[11], s:"Social Studies", t:"Milestones Simulation", d:"Version 3 of the U.S. History EOC simulation.", u:PG+"USH-V3/", r:GH+"USH-V3"},
+ {n:"U.S. History EOC Review v4", g:[11], s:"Social Studies", t:"Review & Practice", d:"Review simulation with a question palette and domain performance breakdown.", u:PG+"V4USHReviewSim/", r:GH+"V4USHReviewSim", f:["Question palette","Domain breakdown"]},
+ {n:"U.S. History EOC Practice", g:[11], s:"Social Studies", t:"Milestones Simulation", d:"EOC practice with a student sign-in screen.", u:PG+"USHPOLICAR/", r:GH+"USHPOLICAR", f:["Student sign-in"]},
+ {n:"U.S. History Practice Simulation", g:[11], s:"Social Studies", t:"Milestones Simulation", d:"Earlier Georgia Milestones practice version for U.S. History.", u:PG+"ushreview2/", r:GH+"ushreview2"},
+ {n:"American Revolution ICT", g:[11], s:"Social Studies", t:"Classroom Activity", d:"Inquiry-based classroom activity on the American Revolution.", u:PG+"american-revolution-ict/", r:GH+"american-revolution-ict", f:["Inquiry"]},
+ {n:"Unit Planning Dashboard", g:ALL, s:"All Subjects", t:"Curriculum & Planning", d:"District-wide 2026-27 dashboard for TGES, MCMS, and MCA: curriculum maps, teachers, units, assessments, and Test Talk status, read live from the curriculum map workbook.", u:PG+"curriculumdashboard/", r:GH+"curriculumdashboard", alt:{label:"Apps Script version", url:"https://script.google.com/macros/s/AKfycbxngn_xOnWlYl-RPFy-c1elO5PS_LArtINvS7rv2lxMCalBxIz-A95FwQp7-QIrbMzPcw/exec"}, f:["Backward design","Curriculum maps","Test Talk"]},
+ // ---- added from GitHub ----
+ {n:"Fine Print Lab", g:[9,10,11,12], s:"Life & Digital Skills", t:"Classroom Activity", d:"Real-world forms practice for MCA students. Students pick a person, fill out forms and contracts (permits, job applications, and more), and write emails, then see the consequences of the mistakes adults make every day.", u:PG+"fine-print-lab/", r:GH+"fine-print-lab", f:["8 forms","2 emails","Consequence feedback"]},
+ {n:"TypeCarnival", g:[2,3,4,5], s:"Life & Digital Skills", t:"Game", d:"Arcade-style keyboarding program with carnival mini-games, adaptive finger-placement lessons, ticket rewards, and a real-time teacher dashboard with a gradebook.", u:PG+"TypeCarnival/", r:GH+"TypeCarnival", f:["Keyboarding","Teacher dashboard","Gradebook"]},
+ {n:"Biology EOC Digital Study Guide", g:[9,10], s:"Science", t:"Study Guide", d:"Self-scoring study guide with 72 questions, three for each of the 24 standard elements, organized by the five blueprint domains. Each domain a student submits is logged to the teacher's Google Sheet.", u:PG+"biology-digital-study-guide/", r:GH+"biology-digital-study-guide", f:["72 questions","Self-scoring","Teacher view"]},
+ {n:"Cyto: Biology EOC Study Buddy", g:[9,10], s:"Science", t:"Study Guide", d:"AI study buddy that helps students think through Biology and prepare for the Milestones EOC. Students join with a class word; no names or logins.", u:PG+"cytotutor/", r:GH+"cytotutor", f:["AI tutor","No logins"]},
+ {n:"US History EOC Study Guide", g:[11], s:"Social Studies", t:"Study Guide", d:"Interactive study guide with all 23 standards and 102 questions, Know It reviews, Help Cards, and 36 cartoons, maps, charts, and diagrams. Domains are sized to their share of the test. Includes a standalone quiz.", u:PG+"ush-eoc-study-guide/", r:GH+"ush-eoc-study-guide", f:["102 questions","Help Cards","Blueprint-weighted"]},
+ {n:"USH Choice Board Studio", g:[11], s:"Social Studies", t:"Classroom Activity", d:"Choice board projects for U.S. History, from regional pitches and trade flowcharts to Great Awakening podcasts and Middle Passage memorials. Each task asks students to argue, not just describe.", u:PG+"USHChoiceBoard/", r:GH+"USHChoiceBoard", f:["Student choice","Projects"]},
+ {n:"Grade 2 Fall Writing Benchmark", g:[2], s:"ELA", t:"Benchmark & Diagnostic", d:"Opinion writing benchmark (ELAGSE2W1) on two paired sources about classroom pets, in a DRC INSIGHT-style screen with highlighter, notepad, line reader, and checklist. Students write on a printable lined response sheet.", u:PG+"2ndgradefallwritingbenchmark/", r:GH+"2ndgradefallwritingbenchmark", f:["District benchmark","Paired sources","Paper response"]},
+ {n:"Grade 3 Fall Writing Benchmark", g:[3], s:"ELA", t:"Benchmark & Diagnostic", d:"Source-based writing benchmark. Students read two sources and the task on screen in a Milestones-style test interface and write their response on paper.", u:PG+"3rdgradefallwritingbenchmark/", r:GH+"3rdgradefallwritingbenchmark", f:["District benchmark","Paper response"]},
+ {n:"Grades 4-5 Fall Writing Benchmark", g:[4,5], s:"ELA", t:"Benchmark & Diagnostic", d:"Source-based writing benchmark for grades 4 and 5 in a Milestones-style test interface. Students write their response on paper.", u:PG+"45thgradefallwritingbenchmark/", r:GH+"45thgradefallwritingbenchmark", f:["District benchmark","Paper response"]},
+ {n:"Grades 6-8 Fall Writing Benchmark", g:[6,7,8], s:"ELA", t:"Benchmark & Diagnostic", d:"Source-based writing benchmark for middle school in a Milestones-style test interface. Students write their response on paper.", u:PG+"68fallwritingbenchmark/", r:GH+"68fallwritingbenchmark", f:["District benchmark","Paper response"]},
+ {n:"Lit & Comp II Fall Writing Benchmark", g:[9,10,11,12], s:"ELA", t:"Benchmark & Diagnostic", d:"Argumentative writing benchmark for high school in a Milestones-style test interface. Students write their response on paper.", u:PG+"912fallwritingbenchmark/", r:GH+"912fallwritingbenchmark", f:["District benchmark","Argument","Paper response"]},
+ {n:"Grade 7 ELA Unit 1 Simulation", g:[7], s:"ELA", t:"Milestones Simulation", d:"Writing the Turning Point unit practice built in Milestones Grade 7 architecture: a sourced ICT set, a peer revision task, and a narrative revision section. 28 items, 41 points, no essay.", u:PG+"7th-Grade-Unit-1/", r:GH+"7th-Grade-Unit-1", f:["Peer revision","Score logging"]},
+ {n:"The Medicine Bag Unit Test", g:[9], s:"ELA", t:"Unit Assessment", d:"Unit test on character, theme, and the Hero's Journey with the story on screen the whole time. 16 questions, 40 points; numbered links jump students to the matching part of the story.", u:PG+"the-medicinebag/", r:GH+"the-medicinebag", f:["Text on screen","Untimed"]},
+ {n:"The Medicine Bag Hero's Journey Exam", g:[9], s:"ELA", t:"Unit Assessment", d:"Four-part, 50-point unit exam: multiple choice, short answer, a Hero's Journey map, and an essay.", u:PG+"the-medicinbaglovin/", r:GH+"the-medicinbaglovin", f:["Journey map","Essay"]},
+ {n:"REDLINE Secure Writing Room", g:[6,7,8,9,10,11,12], s:"ELA", t:"Teacher Tool", d:"Locked-down writing space. No pasting and no wandering tabs, and every draft leaves a typing record the teacher can replay. Teachers create classes and assignments; students join with a class code.", u:PG+"redline/", r:GH+"redline", f:["No pasting","Keystroke replay","Class codes"]},
+ {n:"Grade 7 ELA Writing Map", g:[7], s:"ELA", t:"Curriculum & Planning", d:"Writing-centered year in eight blocks built on Georgia's 2023 ELA standards and the Grade 7 Milestones ALDs. Each unit tile opens its standards, success-criteria ladder, assessments, mentor texts, and weekly arc.", u:PG+"7thgradecurriculum/", r:GH+"7thgradecurriculum", f:["Success criteria","Mentor texts","Print edition"]},
+ {n:"Basic Reading/Writing Curriculum", g:[9,10,11,12], s:"ELA", t:"Curriculum & Planning", d:"Full-year dashboard for Basic Reading/Writing I-IV, organized by quarter and unit. Each unit opens a resource document with elements taught, mini-lesson moves, and teacher-created materials.", u:PG+"basicreadwrite/", r:GH+"basicreadwrite", f:["Year map","Mini-lessons"]},
+ {n:"MCA Curriculum Resource Hub", g:[9,10,11,12], s:"All Subjects", t:"Curriculum & Planning", d:"Resource dashboard for McIntosh County Academy courses, loaded live from the curriculum resource sheet.", u:PG+"MCA_Curriculum_Resources/", r:GH+"MCA_Curriculum_Resources"},
+ {n:"ELA Resource Banks 6-12", g:[6,7,8,9,10,11,12], s:"ELA", t:"Teacher Tool", d:"AI-powered resource banks for Grades 6, 7, 8, Lit & Comp I-III, and Senior Lit. Teachers type what students are struggling with and get print-ready resources aligned to the GSE, the Milestones blueprint, and ALD targets, labeled by DOK.", u:PG+"6-12-ELA-Resource-Banks/", r:GH+"6-12-ELA-Resource-Banks", f:["AI-powered","DOK-labeled","Print-ready"]},
+ {n:"Algebra Warmup Hub", g:[9], s:"Math", t:"Teacher Tool", d:"Everything for the 10-minute daily Algebra warmup in 9th grade Geometry: the Day 1 diagnostic, six slide decks, an item bank, reference materials, checklists, and a live data dashboard.", u:PG+"geometrydashboard/", r:GH+"geometrydashboard", f:["Slide decks","Item bank","Live data"]},
+ {n:"GSE Unit Plan Alignment Checker", g:ALL, s:"All Subjects", t:"Coaching & Leadership", d:"Teachers upload or paste a unit plan and get an alignment report against the Georgia Standards of Excellence, logged to their coaching record.", u:PG+"teacher-unit-feedback/", r:GH+"teacher-unit-feedback", f:["GSE alignment","Coaching record"]},
+ {n:"MCSS Coaching Resource Hub", g:[6,7,8,9,10,11,12], s:"All Subjects", t:"Coaching & Leadership", d:"6-12 coaching hub organized by backward design stage: desired results, evidence, and learning plan. Filter by grade and subject to pull standards, Milestones-aligned tasks, rubrics, texts, and organizers.", u:PG+"mcss-resource-hub/", r:GH+"mcss-resource-hub", f:["Backward design","Resource library"]},
+ {n:"Instructional Walkthrough", g:ALL, s:"All Subjects", t:"Coaching & Leadership", d:"Walkthrough form for classroom visits: high-impact strategies, student engagement counts, timestamped low-inference evidence, strengths, one high-leverage next step, and coaching cycle linkage. Records save on the observer's device.", u:PG+"walkthrough-data/", r:GH+"walkthrough-data", f:["Low-inference evidence","Coaching cycles"]},
+ {n:"MCSS Organizational Chart", g:ALL, s:"All Subjects", t:"Coaching & Leadership", d:"FY 2026-27 district organizational chart with vacancy tracking and a linked job description manual.", u:PG+"orgchart/", r:GH+"orgchart", f:["Job descriptions"]},
+ {n:"MCA Curriculum Map Dashboard", g:[9,10,11,12], s:"All Subjects", t:"Coaching & Leadership", d:"Instructional coaching overview of MCA unit planning: units posted, assessments shared, Test Talks completed, pacing against planned dates, and upcoming tests by teacher.", staff:true, f:["Pacing","Test Talk"]},
+];
+
+const SUBJ = {
+ "ELA":{c:"--ela",soft:"--ela-soft"}, "Math":{c:"--math",soft:"--math-soft"},
+ "Science":{c:"--sci",soft:"--sci-soft"}, "Social Studies":{c:"--ss",soft:"--ss-soft"}, "Life & Digital Skills":{c:"--life",soft:"--life-soft"},
+ "All Subjects":{c:"--all",soft:"--all-soft"}
+};
+const TYPES = ["Milestones Simulation","Benchmark & Diagnostic","Study Guide","Review & Practice","Unit Assessment","Game","Classroom Activity","Curriculum & Planning","Teacher Tool","Coaching & Leadership"];
+const ICONS = {
+ "Milestones Simulation":'<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4"/><path d="m9 13 2 2 4-4"/>',
+ "Benchmark & Diagnostic":'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ "Review & Practice":'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M8 9h8M8 13h5"/>',
+ "Unit Assessment":'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+ "Game":'<rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3"/><circle cx="16" cy="11.5" r="1" fill="currentColor"/><circle cx="18" cy="14" r="1" fill="currentColor"/>',
+ "Classroom Activity":'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+ "Study Guide":'<path d="M2 5a2 2 0 0 1 2-2h6v18H4a2 2 0 0 1-2-2z"/><path d="M22 5a2 2 0 0 0-2-2h-6v18h6a2 2 0 0 0 2-2z"/><path d="M5 8h2M17 8h2M17 12h2"/>',
+ "Curriculum & Planning":'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M7 13h4M7 17h7"/>',
+ "Coaching & Leadership":'<circle cx="9" cy="7" r="3"/><path d="M3 21v-1a6 6 0 0 1 12 0v1"/><path d="m16 11 2 2 4-4"/>',
+ "Teacher Tool":'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
+};
+const icon = (t,size=24)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[t]||ICONS["Unit Assessment"]}</svg>`;
+const gradeLabel = g => g.length===11 ? "All" : g.length>1 ? `${g[0]}–${g[g.length-1]}` : String(g[0]);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const colorVars = s => `--c:var(${SUBJ[s].c});--soft:var(${SUBJ[s].soft})`;
+
+const state = {q:"", grade:"all", subj:new Set(), type:new Set()};
+const $ = id => document.getElementById(id);
+
+// meta line
+const subjCount = new Set(TOOLS.map(t=>t.s).filter(s=>s!=="All Subjects")).size;
+$("meta").innerHTML = `<span><i>${TOOLS.length}</i> tools</span><span>Grades <i>2–12</i></span><span><i>${subjCount}</i> content areas</span><span>Built in <i>MCSS</i></span>`;
+
+// grade select
+$("grade").innerHTML = `<option value="all">All grades</option>`+[2,3,4,5,6,7,8,9,10,11,12].map(g=>`<option value="${g}">Grade ${g}</option>`).join("");
+$("grade").addEventListener("change",e=>{state.grade=e.target.value;render()});
+$("q").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();render()});
+
+function chip(group,label,set,colorVar){
+  const b=document.createElement("button");
+  b.className="chip"+(colorVar?"":" plain"); b.type="button"; b.setAttribute("aria-pressed","false");
+  if(colorVar) b.style.setProperty("--c",`var(${colorVar})`);
+  b.innerHTML=(colorVar?'<span class="dot"></span>':'')+esc(label);
+  b.addEventListener("click",()=>{set.has(label)?set.delete(label):set.add(label);b.setAttribute("aria-pressed",set.has(label));render()});
+  $(group).appendChild(b);
+}
+Object.keys(SUBJ).forEach(s=>chip("subjChips",s,state.subj,SUBJ[s].c));
+TYPES.forEach(t=>chip("typeChips",t,state.type,null));
+
+function matches(t){
+  if(state.grade!=="all" && !t.g.includes(+state.grade)) return false;
+  if(state.subj.size && !state.subj.has(t.s)) return false;
+  if(state.type.size && !state.type.has(t.t)) return false;
+  if(state.q){
+    const hay=[t.n,t.d,t.s,t.t,(t.f||[]).join(" "),"grade "+t.g.join(" grade ")].join(" ").toLowerCase();
+    return state.q.split(/\s+/).every(w=>hay.includes(w));
+  }
+  return true;
+}
+
+function render(){
+  const list=TOOLS.filter(matches);
+  const filtered = state.q||state.grade!=="all"||state.subj.size||state.type.size;
+  $("count").textContent = list.length===TOOLS.length ? `All ${list.length} tools` : `${list.length} of ${TOOLS.length} tools`;
+  $("clearWrap").innerHTML = filtered ? `<button class="clear" id="clr" type="button">Clear all filters</button>` : "Tap a card for details and links";
+  if(filtered) $("clr").onclick=clearAll;
+  $("grid").innerHTML = list.length ? list.map((t,i)=>`
+    <button class="card" type="button" data-i="${TOOLS.indexOf(t)}" style="${colorVars(t.s)}">
+      <div class="top"><div class="ico">${icon(t.t)}</div><div class="grade"><small>Grade</small>${gradeLabel(t.g)}</div></div>
+      <div class="body">
+        <div class="tags"><span class="tag subj">${esc(t.s)}</span><span class="tag">${esc(t.t)}</span>${t.staff?'<span class="tag lock">Staff only</span>':''}</div>
+        <h3>${esc(t.n)}</h3>
+        <p>${esc(t.d)}</p>
+        <div class="credit">Created by <b>Alicia Rosenbaum</b></div>
+      </div>
+    </button>`).join("") : `<div class="empty" style="grid-column:1/-1"><b>No tools match those filters</b>Try a different grade or clear a filter.</div>`;
+  $("grid").querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>openSheet(+c.dataset.i,c)));
+}
+function clearAll(){
+  state.q="";state.grade="all";state.subj.clear();state.type.clear();
+  $("q").value="";$("grade").value="all";
+  document.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed","false"));
+  render();
+}
+
+let lastFocus=null;
+function openSheet(i,from){
+  const t=TOOLS[i]; lastFocus=from;
+  const links=[];
+  if(t.u) links.push(`<a class="btn" href="${t.u}" target="_blank" rel="noopener">${t.t==="Teacher Tool"?"Open tool":"Open student link"} <span aria-hidden="true">↗</span></a>`);
+  if(t.alt) links.push(`<a class="btn ghost" href="${t.alt.url}" target="_blank" rel="noopener">${esc(t.alt.label)} ↗</a>`);
+  if(t.r) links.push(`<a class="btn ghost" href="${t.r}" target="_blank" rel="noopener">View source on GitHub ↗</a>`);
+  const s=$("scrim");
+  s.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh" style="${colorVars(t.s)}">
+    <div class="head"><div class="ico">${icon(t.t,30)}</div>
+      <div style="min-width:0"><div class="tags"><span class="tag subj">${esc(t.s)}</span><span class="tag">${esc(t.t)}</span></div><h2 id="sh">${esc(t.n)}</h2></div>
+      <button class="close" id="x" type="button" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="content">
+      <p class="desc">${esc(t.d)}</p>
+      <dl><dt>Grade</dt><dd>${t.g.length===11?"All grades":"Grade "+gradeLabel(t.g)}</dd><dt>Content</dt><dd>${esc(t.s)}</dd><dt>Type</dt><dd>${esc(t.t)}</dd></dl>
+      ${t.f?`<div class="feats">${t.f.map(x=>`<span class="feat">${esc(x)}</span>`).join("")}</div>`:""}
+      ${links.length?`<div class="actions">${links.join("")}</div>`:""}
+      ${t.staff?`<p class="note">This tool shows student or staff records, so it is shared with MCSS staff directly instead of through a public link. Contact Alicia Rosenbaum for access.</p>`:""}
+      <div class="signed"><div class="mono">AR</div><div>Created by <b>Alicia Rosenbaum</b><br><span style="color:var(--muted)">Instructional Coach, McIntosh County Schools</span></div></div>
+    </div></div>`;
+  s.hidden=false; document.body.style.overflow="hidden";
+  $("x").onclick=closeSheet; $("x").focus();
+}
+function closeSheet(){ $("scrim").hidden=true; $("scrim").innerHTML=""; document.body.style.overflow=""; lastFocus&&lastFocus.focus(); }
+$("scrim").addEventListener("click",e=>{ if(e.target.id==="scrim") closeSheet(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("scrim").hidden) closeSheet(); });
+
+render();
+</script>
