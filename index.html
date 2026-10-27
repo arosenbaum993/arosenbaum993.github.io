@@ -1,9 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Custom teaching tools for McIntosh County Schools, built by Alicia Rosenbaum.">
 <title>Rosenbaum Teaching Tools</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
+[hidden]{display:none!important}
+html{color-scheme:light}
+body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
 /* Layout: dark district-colored masthead, sticky filter bar, then a wrapping grid of subject-colored tool cards; click opens a detail sheet */
 :root{
   --bg:#F5F6FA; --surface:#FFFFFF; --ink:#151722; --muted:#5B6072; --line:#E1E4EE;
@@ -44,6 +55,11 @@ h1 .by b{color:var(--mast-ink);font-weight:700}
 .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
 .meta span{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-size:.85rem;color:var(--mast-ink)}
 .meta span i{font-style:normal;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums}
+.foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:10px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14)}
+.byline{display:flex;align-items:center;gap:12px;font-size:.95rem;color:var(--mast-muted);min-width:0}
+.byline b{color:var(--mast-ink)}
+.byline span{display:block;font-size:.8rem}
+.foot .meta{margin-top:0}
 .confetti{position:absolute;right:-40px;top:-30px;width:360px;height:360px;opacity:.9;pointer-events:none}
 @media (max-width:700px){.confetti{opacity:.35;right:-120px}}
 
@@ -121,7 +137,8 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
-
+</head>
+<body>
 <header class="mast">
   <svg class="confetti" viewBox="0 0 360 360" aria-hidden="true">
     <circle cx="250" cy="110" r="70" fill="#C8102E" opacity=".9"/>
@@ -133,9 +150,12 @@ footer .wrap{padding-block:22px;display:flex;justify-content:space-between;gap:1
   </svg>
   <div class="wrap">
     <div class="eyebrow">McIntosh County Schools · Grades 2–12</div>
-    <h1>Teaching Tools Library<span class="by">Custom-built for MCSS classrooms by <b>Alicia Rosenbaum</b></span></h1>
+    <h1>Teaching Tools Library</h1>
     <p class="lede">Georgia Milestones simulations, pre/post tests, review games, and teacher tools. Search by grade, content area, or type, then tap any card for details and links.</p>
-    <div class="meta" id="meta"></div>
+    <div class="foot">
+      <div class="byline"><div class="mono">AR</div><div>Custom-built for MCSS classrooms by <b>Alicia Rosenbaum</b><span>Instructional Coach, McIntosh County Schools</span></div></div>
+      <div class="meta" id="meta"></div>
+    </div>
   </div>
 </header>
 
@@ -348,3 +368,5 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("scrim").hidd
 
 render();
 </script>
+</body>
+</html>
