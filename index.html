@@ -88,7 +88,7 @@ main .wrap{padding-block:26px 56px}
 .status p{margin:0;color:var(--muted);font-size:.92rem}
 .clear{font:inherit;background:none;border:none;color:var(--math);cursor:pointer;text-decoration:underline;padding:0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;min-width:0}
+.card{all:unset;box-sizing:border-box;position:relative;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;min-width:0}
 .card:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(20,22,40,.08),0 14px 30px rgba(20,22,40,.12)}
 .card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 .card .top{background:var(--soft);padding:16px 16px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative}
@@ -106,6 +106,15 @@ main .wrap{padding-block:26px 56px}
 .credit{margin-top:auto;padding-top:10px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:6px}
 .credit b{color:var(--ink)}
 .lock{font-size:.72rem;font-weight:700;color:var(--red)}
+/* Hover preview: full description slides up over the card */
+.peek{position:absolute;inset:0;background:var(--surface);border-top:5px solid var(--c);padding:16px;display:flex;flex-direction:column;gap:8px;overflow:auto;transform:translateY(101%);transition:transform .22s ease-out;pointer-events:none}
+.peek-k{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.peek-t{font-family:var(--display);font-weight:700;font-size:1.08rem;line-height:1.2}
+.peek-d{font-size:.92rem;line-height:1.45;color:var(--ink)}
+.peek-f{display:flex;flex-wrap:wrap;gap:5px}
+.peek-f span{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;border:1.5px solid var(--c);color:var(--c)}
+.peek-go{margin-top:auto;font-size:.82rem;font-weight:700;color:var(--c)}
+@media (hover:hover){.card:hover .peek,.card:focus-visible .peek{transform:none}}
 .empty{text-align:center;padding:60px 16px;color:var(--muted)}
 .empty b{display:block;font-family:var(--display);font-size:1.3rem;color:var(--ink);margin-bottom:6px}
 
@@ -328,6 +337,13 @@ function render(){
         <h3>${esc(t.n)}</h3>
         <p>${esc(t.d)}</p>
         <div class="credit">Created by <b>Alicia Rosenbaum</b></div>
+      </div>
+      <div class="peek" aria-hidden="true">
+        <div class="peek-k">${esc(t.s)} · ${t.g.length===11?"All grades":"Grade "+gradeLabel(t.g)}</div>
+        <div class="peek-t">${esc(t.n)}</div>
+        <div class="peek-d">${esc(t.d)}</div>
+        ${t.f?`<div class="peek-f">${t.f.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+        <div class="peek-go">${t.staff?"Staff only · click for details":"Click for links"} <span aria-hidden="true">→</span></div>
       </div>
     </button>`).join("") : `<div class="empty" style="grid-column:1/-1"><b>No tools match those filters</b>Try a different grade or clear a filter.</div>`;
   $("grid").querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>openSheet(+c.dataset.i,c)));
