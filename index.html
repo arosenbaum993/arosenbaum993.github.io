@@ -15,7 +15,7 @@ html{color-scheme:light}
 body{margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 
-/* Layout: dark district-colored masthead, sticky filter bar, then a wrapping grid of subject-colored tool cards; click opens a detail sheet */
+/* Layout: dark district-colored masthead, filter bar, then a wrapping grid of subject-colored tool cards; click opens a detail sheet */
 :root{
   --bg:#F5F6FA; --surface:#FFFFFF; --ink:#151722; --muted:#5B6072; --line:#E1E4EE;
   --mast:#121214; --mast-ink:#FFFFFF; --mast-muted:#C9C9D1; --red:#C8102E; --gold:#F2B705;
@@ -40,7 +40,6 @@ body{margin:0}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* Masthead */
@@ -64,7 +63,7 @@ h1 .by b{color:var(--mast-ink);font-weight:700}
 @media (max-width:700px){.confetti{opacity:.35;right:-120px}}
 
 /* Filter bar */
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 4px 14px rgba(20,22,40,.04)}
+.bar{background:var(--surface);border-bottom:1px solid var(--line)}
 .bar .wrap{padding-block:14px;display:grid;gap:12px}
 .row1{display:flex;gap:10px;flex-wrap:wrap}
 .search{flex:1 1 260px;min-width:0;position:relative}
